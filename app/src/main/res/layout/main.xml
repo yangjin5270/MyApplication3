@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#5873F6">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/logo"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="left"
+            android:textSize="26dp"
+            android:paddingLeft="5dp"
+            android:text="@string/app_title"
+            android:layout_weight="20"/>
+        <Button
+            android:id="@+id/start"
+            android:layout_width="60dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:text="启动"
+            android:textSize="10dp" />
+        <Button
+            android:id="@+id/exit"
+            android:layout_width="60dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_weight="3"
+            android:paddingRight="10dp"
+            android:text="退出"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent"  android:layout_height="wrap_content" android:orientation="horizontal"  android:paddingLeft="5dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_weight="1">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="平台账号"
+                    android:textSize="15dp"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:id="@+id/account_md"
+                    android:textSize="15dp" android:background="@drawable/ed_bg"/>
+
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="平台密码"
+                    android:textSize="15dp"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:id="@+id/password_md"
+                    android:textSize="15dp" android:background="@drawable/ed_bg"/>
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_weight="4">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+
+                <ToggleButton
+                    android:id="@+id/toggleButton"
+                    android:layout_width="60dp"
+                    android:layout_height="35dp"
+                    android:clickable="false"
+                    android:text="ToggleButton"
+                    android:layout_gravity="center"
+                    android:textOff="离线"
+                    android:textOn="在线"
+                    android:textSize="10dp" />
+            </LinearLayout>
+
+
+         </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"  >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:text="抢单最高垫支"
+            android:textSize="13dp" />
+
+        <EditText
+            android:id="@+id/dianzhi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/ed_bg"
+            android:inputType="number"
+            android:maxLines="1"
+            android:textSize="13dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:text="抢单最小佣金"
+            android:textSize="13dp" />
+
+        <EditText
+            android:id="@+id/yongjin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/ed_bg"
+            android:inputType="number"
+            android:maxLines="1"
+            android:textSize="13dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:text="重要信息提交"
+            android:textSize="13dp" />
+
+        <EditText
+            android:id="@+id/bianhao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/ed_bg"
+            android:inputType="number"
+            android:maxLines="1"
+            android:textSize="13dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"  >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:text="刷新最小频率"
+            android:textSize="13dp" />
+
+        <EditText
+            android:id="@+id/min_ref"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/ed_bg"
+            android:inputType="number"
+            android:maxLines="1"
+            android:textSize="13dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:paddingLeft="5dp"
+            android:text="刷新最大频率"
+            android:textSize="13dp" />
+
+        <EditText
+            android:id="@+id/max_ref"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/ed_bg"
+            android:inputType="number"
+            android:maxLines="1"
+            android:textSize="13dp" />
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
