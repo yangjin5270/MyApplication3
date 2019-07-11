@@ -200,7 +200,25 @@
 
 
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
 
+        <TextView
+            android:id="@+id/logTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"
+            android:maxLines="10"
+            android:textSize="16dp"
+            android:background="@drawable/ed_bg"
+            android:text="欢迎使用秒单王系列产品\n本app是淘单抢单\n\n\n\n\n\n\n\n\n\n"/>
+
+
+    </LinearLayout>
 
 
 </LinearLayout>

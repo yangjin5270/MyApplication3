@@ -62,43 +62,18 @@ public class loginActivity extends BaseActivity {
             CookieManager cookieManager = CookieManager.getInstance();
             CookieStr = cookieManager.getCookie(url);
             Log.i(TAG, "Cookies = " + CookieStr);
-            super.onPageFinished(view, url);
-
-          /* if(!CookieStr.contains(".ASPXAUTH")){
-               new Thread(new Runnable() {
-                   @Override
-                   public void run() {
-                       try {
-                          *//* Log.i(TAG,"暂停10秒后加载");
-                           Thread.sleep(10000);
-                           Message message =handler.obtainMessage();
-                           message.obj=CookieStr;
-                           message.what=1;
-                           handler.sendMessage(message);*//*
-                       } catch (Exception e) {
-                           e.printStackTrace();
-                       }
-                   }
-               }).start();*/
 
 
-           // webView.evaluateJavascript("javascript:alert('hello')",null);
+
             if(action==1){
                 action++;
-                Log.i(TAG, "evaluateJavascript-javascript1");
-                String js1= "document.getElementById(\"userName\").value = \"李雪1167\";";
 
+                String js1= "document.getElementById(\"userName\").value = \"李雪1167\";"+
+                        "document.getElementById(\"userPwd\").value = \"lx17528138105\";"+
+                        "document.getElementById(\"btnLogin\").click();";
 
-                /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {*/
-                Log.i(TAG, "evaluateJavascript-javascript2");
                 webView.evaluateJavascript("javascript:" + js1, null);
-                Log.i(TAG, "evaluateJavascript-javascript3");
-                Log.i(TAG, "sleep 15s");
-                try {
-                    Thread.sleep(15000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+
             }else{
                 //TODO 登录成功
                 Log.i(TAG, "登录完成"+CookieStr);
@@ -108,7 +83,7 @@ public class loginActivity extends BaseActivity {
                 setResult(RESULT_OK,intent1);
                 finish();
             }
-
+            super.onPageFinished(view,url);
 
         }
     };
