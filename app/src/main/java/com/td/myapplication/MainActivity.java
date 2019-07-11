@@ -28,6 +28,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private ToggleButton button_state;
     private String account;
     private String password;
+
     private final int loginRequstCode = 1;
     private HashMap<String,String> cookiesMap = new HashMap<>();
 
@@ -51,8 +52,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
         logView=(TextView)findViewById(R.id.logTextView);
         logView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        refreshLogView("\nceshi");
-
+        for(int i=0;i<10;i++){
+            refreshLogView("欢迎使用秒单王系列产品\n本app是淘单抢单");
+        }
 
 
     }
@@ -115,14 +117,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             cookiesMap.put(strs2[0],strs2[1]);
         }
         button_state.setChecked(true);
-        refreshLogView(cookies);
-        refreshLogView(account+"登录成功，休息一下，开始抢单");
+        //refreshLogView(cookies);
+        refreshLogView("\n"+account+"登录成功，休息一下，开始抢单");
     }
 
     public void login(){
         Intent loginIntent = new Intent(this,loginActivity.class);
         EditText editText = (EditText)findViewById(R.id.account_md) ;
+        EditText editText1 = (EditText)findViewById(R.id.password_md) ;
         account = editText.getText().toString();
+        password =  editText1.getText().toString();
         loginIntent.putExtra("account",account);
         loginIntent.putExtra("password",password);
         startActivityForResult(loginIntent,loginRequstCode);

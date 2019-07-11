@@ -68,8 +68,8 @@ public class loginActivity extends BaseActivity {
             if(action==1){
                 action++;
 
-                String js1= "document.getElementById(\"userName\").value = \"李雪1167\";"+
-                        "document.getElementById(\"userPwd\").value = \"lx17528138105\";"+
+                String js1= "document.getElementById(\"userName\").value = \""+account+"\";"+
+                        "document.getElementById(\"userPwd\").value = \""+password+"\";"+
                         "document.getElementById(\"btnLogin\").click();";
 
                 webView.evaluateJavascript("javascript:" + js1, null);
