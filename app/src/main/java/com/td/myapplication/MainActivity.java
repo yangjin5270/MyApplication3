@@ -16,6 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener{
@@ -99,10 +106,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
         switch (requestCode){
             case loginRequstCode:
+                if(resultCode==RESULT_CANCELED){
+                    return;
+                }
                 Toast.makeText(this, data.getStringExtra("cookies"), Toast.LENGTH_SHORT).show();
                 Log.i(TAG,data.getStringExtra("cookies"));
                 initState(data.getStringExtra("cookies"));
-
                 break;
                 default:
                     break;
@@ -117,11 +126,59 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             cookiesMap.put(strs2[0],strs2[1]);
         }
         button_state.setChecked(true);
+        button_start.setText("暂停");
         //refreshLogView(cookies);
         refreshLogView("\n"+account+"登录成功，休息一下，开始抢单");
     }
+    void toast(String msg){
+        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+    }
 
     public void login(){
+
+        if(account==null||account.equals("")||password==null||password.equals("")){
+            toast("平台账号或密码不能为空");
+            return;
+        }
+
+        try {
+            File f = new File("/sdcard/cookies");
+            if (!f.exists()) {
+                Log.i(TAG, "建立/sdcard/cookies文件夹 " + f.mkdir());
+            }
+            SimpleDateFormat sfd1 = new SimpleDateFormat("yyyy-MM-dd");
+            String cookiePath = sfd1.format(new Date());
+            //printPro cookiePath
+
+            String path = "/sdcard/cookies/"+account+cookiePath+".txt";
+            File file = new File(path);
+            if (file.exists()) {
+                print("111111111");
+                char[] chars = new char[1024];
+                FileReader fileReader = new FileReader(file);
+                StringBuffer stringBuffer = new StringBuffer();
+                int i;
+                while((i = fileReader.read(chars))!=-1){
+                    stringBuffer.append(chars,0,i);
+                }
+                print("2222222");
+                Log.i(TAG,stringBuffer.toString());
+                print(stringBuffer.toString());
+                String[] strs = stringBuffer.toString().split("qazwsxedc");
+                SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                long tim = sf.parse(strs[0]).getTime();
+                if(tim-System.currentTimeMillis()>60*60*1000){
+                    initState(strs[1]);
+                    Toast.makeText(this,"读取到登录信息！",Toast.LENGTH_SHORT).show();;
+                    return;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         Intent loginIntent = new Intent(this,loginActivity.class);
         EditText editText = (EditText)findViewById(R.id.account_md) ;
         EditText editText1 = (EditText)findViewById(R.id.password_md) ;

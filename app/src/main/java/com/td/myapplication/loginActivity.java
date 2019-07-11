@@ -18,6 +18,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class loginActivity extends BaseActivity {
 
     private WebView webView;
@@ -34,7 +40,6 @@ public class loginActivity extends BaseActivity {
         webView = (WebView)findViewById(R.id.loginWebView);
         webView.setWebViewClient(webViewClient);
         Intent intent = getIntent();
-        Toast.makeText(this,intent.getStringExtra("account"),Toast.LENGTH_SHORT).show();
         account = intent.getStringExtra("account");
         password = intent.getStringExtra("password");
         webView = (WebView)findViewById(R.id.loginWebView);
@@ -81,6 +86,42 @@ public class loginActivity extends BaseActivity {
                 Intent intent1 = new Intent();
                 intent1.putExtra("cookies",returnStr);
                 setResult(RESULT_OK,intent1);
+
+                try {
+
+                    File f = new File("/sdcard/cookies");
+                    if (!f.exists()) {
+                        Log.i(TAG, "建立/sdcard/cookies文件夹 " + f.mkdir());
+                    }
+                    SimpleDateFormat sfd1 = new SimpleDateFormat("yyyy-MM-dd");
+                    String cookiePath = sfd1.format(new Date());
+                    //printPro cookiePath
+
+                    String path = "/sdcard/cookies/"+account+cookiePath+".txt";
+                    File file = new File(path);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    file.createNewFile();
+
+                    FileOutputStream out = new FileOutputStream(file);
+                    PrintStream p = new PrintStream(out);
+                    sfd1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String cookietime = sfd1.format(new Date(System.currentTimeMillis()+(8 * 60 * 60 * 1000)));
+
+                    p.print(cookietime+"qazwsxedc"+CookieStr);
+                    p.flush();
+                    p.close();
+                    out.flush();
+                    out.close();
+                    cookieManager.removeSessionCookie();
+                    cookieManager.removeAllCookie();
+                    Log.i(TAG,"生成cookies文件" + file.getName()+"完毕");
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 finish();
             }
             super.onPageFinished(view,url);
@@ -93,7 +134,7 @@ public class loginActivity extends BaseActivity {
     public void onBackPressed() {
         Intent intent1 = new Intent();
         intent1.putExtra("cookies",returnStr);
-        setResult(RESULT_OK,intent1);
+        setResult(RESULT_CANCELED,intent1);
         super.onBackPressed();
     }
 
