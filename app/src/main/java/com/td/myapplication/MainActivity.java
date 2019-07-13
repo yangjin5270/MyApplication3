@@ -48,7 +48,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         public void handleMessage( Message msg){
             switch (msg.what){
                 case QdMain.refSuccessMsg:
-                    refreshLogView("刷新任务成功，共"+msg.arg1+"条任务");
+                    refreshLogView("刷新任务正常，共"+msg.arg1+"条任务\n");
+                    break;
+                case QdMain.actionStartMsg:
+                    refreshLogView(msg.obj.toString()+"\n");
                     break;
             }
         }
@@ -140,7 +143,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         button_start.setText("暂停");
         //refreshLogView(cookies);
         refreshLogView("\n"+account+"登录成功，休息一下，开始抢单");
-        Thread mainThead = new Thread(new QdMain(handler,15,12,100,1.5,cookiesMap));
+        Thread mainThead = new Thread(new QdMain(handler,15,12,1000,0.9,cookiesMap));
         mainThead.start();
     }
     void toast(String msg){

@@ -9,19 +9,29 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.os.Handler;
 
 public class QdMain implements Runnable {
 
     public static final int refSuccessMsg =51;
+    public static final int actionStartMsg =52;
     private String TAG="QdMain";
     private Handler handler;
     private int maxSleep;
     private int minSleep;
     private int pic;
     private HashMap cookies = new HashMap();
+
+    HashMap<String,String> blacklist = new HashMap();
+    HashMap<String,String>blacklistTemp = new HashMap<String,String>();
+
 
     public void setRunFlag(boolean runFlag) {
         this.runFlag = runFlag;
@@ -40,13 +50,15 @@ public class QdMain implements Runnable {
 
     private double brokerage;
     @Override
-
     public void run() {
         Log.i(TAG,"mianThead start>>>>>>>>");
         Connection.Response response;
         Document document;
         Elements esGoodsPri;
+        Pattern pattern;
+        Matcher matcher;
         Map<String,String> headers = new HashMap<String, String>();
+
         headers = getFixHead();
 
         headers.put("Cache-Control","max-age=0");
@@ -54,6 +66,7 @@ public class QdMain implements Runnable {
         headers.put("Upgrade-Insecure-Requests","1");
         String url = "http://www.88887912.com/user/newtasklist.aspx";
         while(runFlag){
+
             try {
                 response = Jsoup.connect(url).ignoreHttpErrors(true).ignoreContentType(true).method(Connection.Method.GET)
                         .headers(headers)
@@ -69,21 +82,84 @@ public class QdMain implements Runnable {
                 }
 
                 document = Jsoup.parse(response.body(),"UTF-8");
-                Log.i(TAG,response.body());
+                //Log.i(TAG,response.body());
                 esGoodsPri = document.getElementsByAttributeValue("class","moamd2");//这里商品购买价格
                 if(esGoodsPri.size()>0){
                     Message message = new Message();
                     message.what = refSuccessMsg;
                     message.arg1 = esGoodsPri.size();
                     handler.sendMessage(message);
-                    runFlag = false;
-                    Log.i(TAG,"exit thead");
+                    Elements esBrokerage = document.getElementsByAttributeValue("class","moamd3");//商品佣金
+                    Elements postDatas = document.getElementsByAttributeValue("class","ljqdn");//mhmkdd
+                    Elements taskId = document.getElementsByAttributeValue("class","mhmkdd");//
+
+
+                    for (int i = 0; i < esGoodsPri.size(); i++) {
+
+                        String strt1 =  taskId.get(i).getElementsByAttributeValue("href","#").get(0).text();
+                        String str2  =  postDatas.get(i).attr("onclick");
+                        pattern = Pattern.compile("[0-9]{7}");
+                        matcher = pattern.matcher(str2);
+                        if(matcher.find()){
+                            str2 =matcher.group();
+                        }
+                        if(blacklist.size()>0){
+
+                            if(blacklist.get(str2).equals(strt1)){
+                                //print("查询记录有商家二次接单限制，不抢本单")
+                                continue;
+                            }
+                        }
+
+                        String strt = esGoodsPri.get(i).text();
+                        pattern = Pattern.compile("[0-9]{1,4}\\.[0-9]{1,2}|[0-9]{1,5}");
+                        matcher = pattern.matcher(strt);
+                        String strtemp="";
+                        if(matcher.find()){
+                            strt = matcher.group();
+                            strtemp = strt;
+                        }
+
+                        if( Double.valueOf(strt)>Double.valueOf(pic)){
+                            //printPro("第（${i}）个商品价格为${strt}")
+                            continue;
+                        }
+
+                        strt = esBrokerage.get(i).text();
+                        pattern = Pattern.compile("[0-9]{1,4}\\.[0-9]{1,2}|[0-9]{1,5}");
+                        matcher = pattern.matcher(strt);
+                        if(matcher.find()){
+                            strt = matcher.group();
+                        }
+                        //这里还要判读接单佣金
+
+                        if(Double.valueOf(strt)<Double.valueOf(brokerage)){
+                            continue;
+                        }
+
+                        blacklistTemp.put(str2,strt1);
+                        new Thread(new QianDanThread()).start();
+                        Message message1 = new Message();
+                        message1.what=actionStartMsg;
+                        message1.obj="开始抢["+str2+"]商品:价格"+strtemp+" 佣金:"+strt;
+                        handler.sendMessage(message1);
+                        //printPro()
+
+
+                    }
+
+
+
                 }
             } catch (IOException e) {
                 Log.i(TAG,"平台网络访问超时");
                 e.printStackTrace();
             }
-
+            try {
+                Thread.sleep(15000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -103,6 +179,13 @@ public class QdMain implements Runnable {
     }
 
 
+    class QianDanThread implements Runnable {
 
+        private String TAG="QianDanThread";
+        @Override
+        public void run() {
+            Log.i(TAG,"QianDanThread run");
+        }
+    }
 
 }
