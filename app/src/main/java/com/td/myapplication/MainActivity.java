@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -41,7 +42,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
     private TextView logView;
 
-    private Handler handler = new Handler();
+    private Handler handler = new Handler(){
+
+        @Override
+        public void handleMessage( Message msg){
+            switch (msg.what){
+                case QdMain.refSuccessMsg:
+                    refreshLogView("刷新任务成功，共"+msg.arg1+"条任务");
+                    break;
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +71,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         logView=(TextView)findViewById(R.id.logTextView);
         logView.setMovementMethod(ScrollingMovementMethod.getInstance());
         for(int i=0;i<10;i++){
-            refreshLogView("欢迎使用秒单王系列产品\n本app是淘单抢单");
+            refreshLogView("欢迎使用秒单王系列产品\n本app是淘单抢单\n");
         }
 
 
@@ -73,8 +84,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             @Override
             public void run() {
                 int offset = logView.getLineCount() * logView.getLineHeight();
-                print(offset);
-                print(logView.getHeight());
+                //print(offset);
+                //print(logView.getHeight());
 
                 if (offset > logView.getHeight()) {
                     logView.scrollTo(0, offset - logView.getHeight());
@@ -129,12 +140,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         button_start.setText("暂停");
         //refreshLogView(cookies);
         refreshLogView("\n"+account+"登录成功，休息一下，开始抢单");
+        Thread mainThead = new Thread(new QdMain(handler,15,12,100,1.5,cookiesMap));
+        mainThead.start();
     }
     void toast(String msg){
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
     }
 
     public void login(){
+
+        EditText editText = (EditText)findViewById(R.id.account_md) ;
+        EditText editText1 = (EditText)findViewById(R.id.password_md) ;
+        account = editText.getText().toString();
+        password =  editText1.getText().toString();
+
 
         if(account==null||account.equals("")||password==null||password.equals("")){
             toast("平台账号或密码不能为空");
@@ -153,7 +172,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             String path = "/sdcard/cookies/"+account+cookiePath+".txt";
             File file = new File(path);
             if (file.exists()) {
-                print("111111111");
                 char[] chars = new char[1024];
                 FileReader fileReader = new FileReader(file);
                 StringBuffer stringBuffer = new StringBuffer();
@@ -161,7 +179,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 while((i = fileReader.read(chars))!=-1){
                     stringBuffer.append(chars,0,i);
                 }
-                print("2222222");
                 Log.i(TAG,stringBuffer.toString());
                 print(stringBuffer.toString());
                 String[] strs = stringBuffer.toString().split("qazwsxedc");
@@ -180,10 +197,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
 
         Intent loginIntent = new Intent(this,loginActivity.class);
-        EditText editText = (EditText)findViewById(R.id.account_md) ;
-        EditText editText1 = (EditText)findViewById(R.id.password_md) ;
-        account = editText.getText().toString();
-        password =  editText1.getText().toString();
         loginIntent.putExtra("account",account);
         loginIntent.putExtra("password",password);
         startActivityForResult(loginIntent,loginRequstCode);
