@@ -79,6 +79,7 @@ public class QdMain implements Runnable {
         headers.put("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
         headers.put("Upgrade-Insecure-Requests","1");
         String url = "http://www.88887912.com/user/newtasklist.aspx";
+        sleepFlag = false;
         while(runFlag){
             while(sleepFlag){
                 try {
@@ -158,7 +159,7 @@ public class QdMain implements Runnable {
                         }
 
                         blacklistTemp.put(str2,strt1);
-                        new Thread(new QianDanThread()).start();
+                        new Thread(new QianDanThread(str2,handler)).start();
                         Message message1 = new Message();
                         message1.what=actionStartMsg;
                         message1.obj="开始抢["+str2+"]商品:价格"+strtemp+" 佣金:"+strt;
@@ -241,13 +242,13 @@ public class QdMain implements Runnable {
     }
 
 
-    class QianDanThread implements Runnable {
+/*    class QianDanThread implements Runnable {
 
         private String TAG="QianDanThread";
         @Override
         public void run() {
             Log.i(TAG,"QianDanThread run");
         }
-    }
+    }*/
 
 }

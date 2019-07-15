@@ -212,10 +212,10 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             android:fadeScrollbars="false"
-            android:maxLines="10"
-            android:textSize="16dp"
+            android:maxLines="15"
+            android:textSize="10dp"
             android:background="@drawable/ed_bg"
-            android:text="\n\n\n\n\n\n\n\n\n\n欢迎使用秒单王系列产品\n本app是淘单抢单\n"/>
+            android:text="\n\n\n\n\n\n\n\n\n\n\n\n\n欢迎使用秒单王系列产品\n本app是淘单抢单\n"/>
 
 
     </LinearLayout>

@@ -1,4 +1,6 @@
 package com.td.myapplication;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.td.myapplication.BaiduBase64;
@@ -21,10 +23,11 @@ public class QianDanThread implements Runnable{
     private String TAG="QianDanThread";
     int state = -1;
     HashMap<String,String> headers = new HashMap<String, String>();
+    private Handler handler;
 
-
-    QianDanThread(String idi){
+    QianDanThread(String idi,Handler handle){
         this.id = idi;
+        this.handler = handle;
 
     }
 
@@ -72,6 +75,8 @@ public class QianDanThread implements Runnable{
                     if(state<998){
                         state = 998;
                     }
+                    sendMessage(str);
+
                    ;
                 }else if(str.contains("被限制接单")){
                     Log.i(TAG,this.id+"抢单失败原因："+str);
@@ -79,6 +84,7 @@ public class QianDanThread implements Runnable{
                     if(state<999){
                         state = 999;
                     }
+                    sendMessage(str);
 
                 }
                 else if(str.contains("创宇云安全")){
@@ -87,6 +93,7 @@ public class QianDanThread implements Runnable{
                     if(state<9){
                         state = 9;
                     }
+                    sendMessage(str);
 
                 } else if(str.contains("超过7天")){
                     Log.i(TAG,this.id+"抢单失败原因：：有货超过7天");
@@ -94,6 +101,7 @@ public class QianDanThread implements Runnable{
                     if(state<69){
                         state = 69;
                     }
+                    sendMessage(str);
 
                 }else if(str.contains("商家限制二次接单")){
                     Log.i(TAG,this.id+"抢单失败原因：：商家限制二次接单");
@@ -102,6 +110,7 @@ public class QianDanThread implements Runnable{
                         state = 3;
                     }
                     writeId(id,QdMain.blacklistTemp.get(id));
+                    sendMessage(str);
 
                 }else if (str.contains("黑名单")){
                     Log.i(TAG,this.id+"抢单失败原因：：你已被该商家拉入黑名单");
@@ -110,6 +119,7 @@ public class QianDanThread implements Runnable{
                         state = 3;
                     }
                     writeId(id,QdMain.blacklistTemp.get(id));
+                    sendMessage(str);
 
                 } else if(str.contains("本任务已被接完")){
                     Log.i(TAG,this.id+"抢单失败原因：：本任务已被接完");
@@ -117,6 +127,7 @@ public class QianDanThread implements Runnable{
                     if(state<4){
                         state = 4;
                     }
+                    sendMessage(str);
 
 
                 }else if(str.contains("接单成功")){
@@ -125,6 +136,12 @@ public class QianDanThread implements Runnable{
                     if(state<1){
                         state = 1;
                     }
+                    Message message = new Message();
+                    message.what = 311;
+                    message.arg1 = state;
+                    message.arg2 = 1;
+                    message.obj = this.id+"抢单失败原因："+str;
+                    handler.sendMessage(message);
                     //new Thread(new PlayMusic(this.script)).start();
                     //script.sleep(5000);
                     //GV.playFlag = true
@@ -135,6 +152,7 @@ public class QianDanThread implements Runnable{
                     if(state<59){
                         state = 59;
                     }
+                    sendMessage(str);
                     //script.print state
                 }else if (str.contains("任务上限")){
                     Log.i(TAG,this.id+"抢单失败原因：任务达到账号上限");
@@ -142,18 +160,26 @@ public class QianDanThread implements Runnable{
                     if(state<97){
                         state = 97;
                     }
+                    sendMessage(str);
 
                 }else{
                     Log.i(TAG,str);
                     state = 0;
+                    sendMessage(str);
                 }
             } catch (Exception e) {
-                Log.i(TAG,"线程");
+                Log.i(TAG,"线程"+e);
             }
 
             //GV.threadNumCount++;
     }
-
+    public void sendMessage(String str){
+        Message message = new Message();
+        message.what = 311;
+        message.arg1 = state;
+        message.obj = this.id+"抢单失败原因："+str;
+        handler.sendMessage(message);
+    }
     public void writeId(String id ,String id1){
         SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd");
         String mapPath = sfd.format(new Date());

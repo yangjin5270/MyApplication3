@@ -53,9 +53,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 case QdMain.actionStartMsg:
                     refreshLogView(msg.obj.toString()+"\n");
                     break;
+                case 311:
+                    qianDanProcess(msg.obj.toString(),msg.arg1,msg.arg2);
+                    break;
             }
         }
     };
+
+    public void qianDanProcess(String str,int arg1,int arg2){
+        refreshLogView(str +"\n");
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,7 +152,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         button_start.setText("暂停");
         //refreshLogView(cookies);
         refreshLogView("\n"+account+"登录成功，休息一下，开始抢单");
-        Thread mainThead = new Thread(new QdMain(handler,15,12,1000,0.9,cookiesMap));
+        Thread mainThead = new Thread(new QdMain(handler,15,12,30,0.9,cookiesMap));
         mainThead.start();
     }
     void toast(String msg){
