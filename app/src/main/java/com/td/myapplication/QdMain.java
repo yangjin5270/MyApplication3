@@ -8,13 +8,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 import android.os.Handler;
 
@@ -22,15 +27,24 @@ public class QdMain implements Runnable {
 
     public static final int refSuccessMsg =51;
     public static final int actionStartMsg =52;
+    public static String account;
     private String TAG="QdMain";
     private Handler handler;
     private int maxSleep;
     private int minSleep;
     private int pic;
-    private HashMap cookies = new HashMap();
 
-    HashMap<String,String> blacklist = new HashMap();
-    HashMap<String,String>blacklistTemp = new HashMap<String,String>();
+    public void setSleepFlag(boolean sleepFlag) {
+        this.sleepFlag = sleepFlag;
+    }
+
+    private boolean sleepFlag;
+    public static HashMap cookies = new HashMap();
+
+
+
+    public static HashMap<String,String> blacklist = new HashMap();
+    public static HashMap<String,String>blacklistTemp = new HashMap<String,String>();
 
 
     public void setRunFlag(boolean runFlag) {
@@ -38,13 +52,13 @@ public class QdMain implements Runnable {
     }
 
     private boolean runFlag = true;
-    public QdMain(Handler handler, int maxSleep, int minSleep, int pic, double brokerage,HashMap cookies) {
+    public QdMain(Handler handler, int maxSleep, int minSleep, int pic, double brokerage,HashMap cookies1) {
         this.handler = handler;
         this.maxSleep = maxSleep;
         this.minSleep = minSleep;
         this.pic = pic;
         this.brokerage = brokerage;
-        this.cookies = cookies;
+        cookies = cookies1;
 
     }
 
@@ -66,7 +80,13 @@ public class QdMain implements Runnable {
         headers.put("Upgrade-Insecure-Requests","1");
         String url = "http://www.88887912.com/user/newtasklist.aspx";
         while(runFlag){
-
+            while(sleepFlag){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             try {
                 response = Jsoup.connect(url).ignoreHttpErrors(true).ignoreContentType(true).method(Connection.Method.GET)
                         .headers(headers)
@@ -176,6 +196,48 @@ public class QdMain implements Runnable {
         //TODO 用户代理需要加入多项随机
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36");
         return headers;
+    }
+
+
+    void init(){
+        try {
+            SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd");
+            String mapPath = sfd.format(new Date());
+            String b64 = BaiduBase64.encode(account.getBytes());
+            File file1 = new File("/sdcard/"+b64+"maps"+mapPath+".txt");
+            Log.i(TAG,"载入商品过滤名单.....");
+            if (file1.exists()) {
+                //printPro('Cookes信息存在，获取失效时间中>>>.'+file1.getName())
+
+
+                char[] chars = new char[1024];
+                FileReader fileReader = new FileReader(file1);
+                StringBuffer stringBuffer = new StringBuffer();
+                int i;
+                while((i = fileReader.read(chars))!=-1){
+                    stringBuffer.append(chars,0,i);
+                }
+                Log.i(TAG,stringBuffer.toString());
+                String strTemp = stringBuffer.toString();
+                String[] strs = strTemp.split("=");
+                //print strs.size()
+                if(strs.length>1){
+                    for (int j = 0; j < strs.length; i++) {
+                        if((j+1)==strs.length){
+                            break;
+                        }
+                        String[]strs1 = strs[i].split("\\|");
+                        QdMain.blacklist.put(strs1[0],strs1[1]);
+                    }
+                }
+
+            }else{
+                    Log.i(TAG, "建立商品过滤文件"+file1.createNewFile());
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
