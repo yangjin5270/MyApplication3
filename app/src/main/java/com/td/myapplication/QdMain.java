@@ -59,6 +59,11 @@ public class QdMain implements Runnable {
         this.pic = pic;
         this.brokerage = brokerage;
         cookies = cookies1;
+        init();
+        Message message = new Message();
+        message.what=actionStartMsg;
+        message.obj="载入商品过滤文件...";
+        handler.sendMessage(message);
 
     }
 
