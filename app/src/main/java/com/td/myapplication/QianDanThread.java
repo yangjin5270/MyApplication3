@@ -21,7 +21,7 @@ public class QianDanThread implements Runnable{
 
     String id="";
     private String TAG="QianDanThread";
-    int state = -1;
+    public static final  int stateMsg=311;
     HashMap<String,String> headers = new HashMap<String, String>();
     private Handler handler;
 
@@ -72,8 +72,8 @@ public class QianDanThread implements Runnable{
                 if(str.contains("超过今天最多接任")){
                     Log.i(TAG,this.id+"抢单失败原因："+str);
 
-                    if(state<998){
-                        state = 998;
+                    if(QdMain.state<998){
+                        QdMain.state = 998;
                     }
                     sendMessage(str);
 
@@ -81,8 +81,8 @@ public class QianDanThread implements Runnable{
                 }else if(str.contains("被限制接单")){
                     Log.i(TAG,this.id+"抢单失败原因："+str);
 
-                    if(state<999){
-                        state = 999;
+                    if(QdMain.state<999){
+                        QdMain.state = 999;
                     }
                     sendMessage(str);
 
@@ -90,24 +90,24 @@ public class QianDanThread implements Runnable{
                 else if(str.contains("创宇云安全")){
                     Log.i(TAG,this.id+"抢单失败原因：：线程发现创宇盾");
 
-                    if(state<9){
-                        state = 9;
+                    if(QdMain.state<9){
+                        QdMain.state = 9;
                     }
-                    sendMessage(str);
+                    sendMessage("抢单失败原因：线程发现创宇盾");
 
                 } else if(str.contains("超过7天")){
                     Log.i(TAG,this.id+"抢单失败原因：：有货超过7天");
 
-                    if(state<69){
-                        state = 69;
+                    if(QdMain.state<69){
+                        QdMain.state = 69;
                     }
                     sendMessage(str);
 
                 }else if(str.contains("商家限制二次接单")){
                     Log.i(TAG,this.id+"抢单失败原因：：商家限制二次接单");
                     QdMain.blacklist.put(id,QdMain.blacklistTemp.get(id));
-                    if(state<3){
-                        state = 3;
+                    if(QdMain.state<3){
+                        QdMain.state = 3;
                     }
                     writeId(id,QdMain.blacklistTemp.get(id));
                     sendMessage(str);
@@ -115,8 +115,8 @@ public class QianDanThread implements Runnable{
                 }else if (str.contains("黑名单")){
                     Log.i(TAG,this.id+"抢单失败原因：：你已被该商家拉入黑名单");
                     QdMain.blacklist.put(id,QdMain.blacklistTemp.get(id));
-                    if(state<3){
-                        state = 3;
+                    if(QdMain.state<3){
+                        QdMain.state = 3;
                     }
                     writeId(id,QdMain.blacklistTemp.get(id));
                     sendMessage(str);
@@ -124,8 +124,8 @@ public class QianDanThread implements Runnable{
                 } else if(str.contains("本任务已被接完")){
                     Log.i(TAG,this.id+"抢单失败原因：：本任务已被接完");
 
-                    if(state<4){
-                        state = 4;
+                    if(QdMain.state<4){
+                        QdMain.state = 4;
                     }
                     sendMessage(str);
 
@@ -133,14 +133,14 @@ public class QianDanThread implements Runnable{
                 }else if(str.contains("接单成功")){
                     Log.i(TAG,this.id+"抢单成功");
 
-                    if(state<1){
-                        state = 1;
+                    if(QdMain.state<1){
+                        QdMain.state = 1;
                     }
                     Message message = new Message();
                     message.what = 311;
-                    message.arg1 = state;
+                    message.arg1 = QdMain.state;
                     message.arg2 = 1;
-                    message.obj = this.id+"抢单失败原因："+str;
+                    message.obj = this.id+"抢单成功";
                     handler.sendMessage(message);
                     //new Thread(new PlayMusic(this.script)).start();
                     //script.sleep(5000);
@@ -148,26 +148,27 @@ public class QianDanThread implements Runnable{
 
                 }else if(str.contains("待付款任务已超过3个")){
                     Log.i(TAG,this.id+"抢单失败原因：待付款任务已超过3个");
-                    //script.print state
-                    if(state<59){
-                        state = 59;
+                    //script.print QdMain.state
+                    if(QdMain.state<59){
+                        QdMain.state = 59;
                     }
                     sendMessage(str);
-                    //script.print state
+                    //script.print QdMain.state
                 }else if (str.contains("任务上限")){
                     Log.i(TAG,this.id+"抢单失败原因：任务达到账号上限");
-                    //script.print state
-                    if(state<97){
-                        state = 97;
+                    //script.print QdMain.state
+                    if(QdMain.state<97){
+                        QdMain.state = 97;
                     }
                     sendMessage(str);
 
                 }else{
                     Log.i(TAG,str);
-                    state = 0;
+                    QdMain.state = 0;
                     sendMessage(str);
                 }
             } catch (Exception e) {
+                QdMain.state = 8484;
                 Log.i(TAG,"线程"+e);
             }
 
@@ -176,7 +177,7 @@ public class QianDanThread implements Runnable{
     public void sendMessage(String str){
         Message message = new Message();
         message.what = 311;
-        message.arg1 = state;
+        message.arg1 = QdMain.state;
         message.obj = this.id+"抢单失败原因："+str;
         handler.sendMessage(message);
     }

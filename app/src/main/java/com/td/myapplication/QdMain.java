@@ -34,6 +34,8 @@ public class QdMain implements Runnable {
     private int minSleep;
     private int pic;
 
+    public static int state;
+
     public void setSleepFlag(boolean sleepFlag) {
         this.sleepFlag = sleepFlag;
     }
@@ -52,7 +54,8 @@ public class QdMain implements Runnable {
     }
 
     private boolean runFlag = true;
-    public QdMain(Handler handler, int maxSleep, int minSleep, int pic, double brokerage,HashMap cookies1) {
+    public QdMain(Handler handler, String account,int maxSleep, int minSleep, int pic, double brokerage,HashMap cookies1) {
+        this.account=account;
         this.handler = handler;
         this.maxSleep = maxSleep;
         this.minSleep = minSleep;
@@ -93,6 +96,29 @@ public class QdMain implements Runnable {
                     e.printStackTrace();
                 }
             }
+            switch (state){
+                case 998:
+                    处理最多接任();
+                    break;
+                case 999:
+                    处理限制接单();
+                    break;
+                case 9:
+                    处理创宇盾();
+                    break;
+                case 59:
+                    处理待付款();
+                    break;
+                case 69:
+                    处理未收货();
+                    break;
+                case 97:
+                    处理已做完();
+                    break;
+                default:
+                    break;
+            }
+
             try {
                 response = Jsoup.connect(url).ignoreHttpErrors(true).ignoreContentType(true).method(Connection.Method.GET)
                         .headers(headers)
@@ -111,6 +137,7 @@ public class QdMain implements Runnable {
                 //Log.i(TAG,response.body());
                 esGoodsPri = document.getElementsByAttributeValue("class","moamd2");//这里商品购买价格
                 if(esGoodsPri.size()>0){
+                    state = -1;
                     Message message = new Message();
                     message.what = refSuccessMsg;
                     message.arg1 = esGoodsPri.size();
@@ -121,7 +148,6 @@ public class QdMain implements Runnable {
 
 
                     for (int i = 0; i < esGoodsPri.size(); i++) {
-
                         String strt1 =  taskId.get(i).getElementsByAttributeValue("href","#").get(0).text();
                         String str2  =  postDatas.get(i).attr("onclick");
                         pattern = Pattern.compile("[0-9]{7}");
@@ -131,7 +157,7 @@ public class QdMain implements Runnable {
                         }
                         if(blacklist.size()>0){
 
-                            if(blacklist.get(str2).equals(strt1)){
+                            if(blacklist.get(str2)!=null&&blacklist.get(str2).equals(strt1)){
                                 //print("查询记录有商家二次接单限制，不抢本单")
                                 continue;
                             }
@@ -171,10 +197,7 @@ public class QdMain implements Runnable {
                         handler.sendMessage(message1);
                         //printPro()
 
-
                     }
-
-
 
                 }
             } catch (IOException e) {
@@ -182,7 +205,86 @@ public class QdMain implements Runnable {
                 e.printStackTrace();
             }
             try {
-                Thread.sleep(15000);
+                int tim = MyUtil.randomRange(minSleep*1000,maxSleep*1000);
+                Message message1 = new Message();
+                message1.what=actionStartMsg;
+                message1.obj="刷新随机间隔"+tim+"毫秒";
+                handler.sendMessage(message1);
+                Thread.sleep(tim);
+
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+    void  处理最多接任(){
+        Message message1 = new Message();
+        message1.what=actionStartMsg;
+        message1.obj="账号：您已超过今天最多接任务数量，请明天再接！";
+        handler.sendMessage(message1);
+        Ifeige.sendMessageUser("2056","抢单：账号：您已超过今天最多接任务数量，请明天再接！",account);
+        //Message.sendMessageWX("",GV.sendMessageWXName)
+        while(true){
+            //toast("今日已做完所有订单")
+            //toastPro("您已超过今天最多接任务数量");
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    void  处理已做完(){
+        Message message1 = new Message();
+        message1.what=actionStartMsg;
+        message1.obj="今日已做完所有订单！";
+        handler.sendMessage(message1);
+        Ifeige.sendMessageUser("2056","抢单：今日已做完所有订单！",account);
+
+        while(true){
+            //toast("今日已做完所有订单")
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    void  处理未收货(){
+
+        Message message1 = new Message();
+        message1.what=actionStartMsg;
+        message1.obj="你有超过7天未收货，请收货后，在抢单！";
+        handler.sendMessage(message1);
+        Ifeige.sendMessageUser("2056","抢单：你有超过7天未收货，请收货后，在抢单！",account);
+
+        while(true){
+            //toast("今日已做完所有订单")
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+    void 处理限制接单(){
+
+        Message message1 = new Message();
+        message1.what=actionStartMsg;
+        message1.obj="你被限制接单！";
+        handler.sendMessage(message1);
+        Ifeige.sendMessageUser("2056","抢单：你被限制接单！",account);
+
+        while(true){
+            //toast("今日已做完所有订单")
+            try {
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -190,7 +292,26 @@ public class QdMain implements Runnable {
 
     }
 
+    void 处理创宇盾(){
+        Message message1 = new Message();
+        message1.what=actionStartMsg;
+        message1.obj="处理创宇盾！暂定15秒";
+        handler.sendMessage(message1);
 
+        for (int i = 0; i < 15; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    void 处理待付款(){
+
+
+    }
 
 
     public HashMap getFixHead(){
@@ -228,11 +349,11 @@ public class QdMain implements Runnable {
                 String[] strs = strTemp.split("=");
                 //print strs.size()
                 if(strs.length>1){
-                    for (int j = 0; j < strs.length; i++) {
+                    for (int j = 0; j < strs.length;j ++) {
                         if((j+1)==strs.length){
                             break;
                         }
-                        String[]strs1 = strs[i].split("\\|");
+                        String[]strs1 = strs[j].split("\\|");
                         QdMain.blacklist.put(strs1[0],strs1[1]);
                     }
                 }
@@ -244,6 +365,7 @@ public class QdMain implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Log.i(TAG, "初始化数据完成");
     }
 
 

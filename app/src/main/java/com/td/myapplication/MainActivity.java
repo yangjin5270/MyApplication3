@@ -4,7 +4,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -28,14 +30,30 @@ import java.util.HashMap;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener{
 
-
+    public static final String PREFERENCE_NAME = "SaveSetting";
+    //定义SharedPreferences的访问模式：全局读+全局写
+    public static int MODE = MODE_PRIVATE;
 
     private String TAG = "MainActivity";
     private Button button_start;
     private Button button_exit;
     private ToggleButton button_state;
+
+    private EditText edit_account;
+    private EditText edit_password;
+    private EditText edit_dianzhi;
+    private EditText edit_yongjin;
+    private EditText edit_bianhao;
+    private EditText edit_min_ref;
+    private EditText edit_max_ref;
+
     private String account;
     private String password;
+    private String dianzhi;
+    private String yongjin;
+    private String bianhao;
+    private String min_ref;
+    private String max_ref;
 
     private final int loginRequstCode = 1;
     private HashMap<String,String> cookiesMap = new HashMap<>();
@@ -48,12 +66,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         public void handleMessage( Message msg){
             switch (msg.what){
                 case QdMain.refSuccessMsg:
-                    refreshLogView("刷新任务正常，共"+msg.arg1+"条任务\n");
+                    refreshLogView(MyUtil.getTime()+"->"+"刷新任务正常，共"+msg.arg1+"条任务\n--------------------------------\n");
                     break;
                 case QdMain.actionStartMsg:
-                    refreshLogView(msg.obj.toString()+"\n");
+                    refreshLogView(MyUtil.getTime()+"->"+msg.obj.toString()+"\n--------------------------------\n");
                     break;
-                case 311:
+                case QianDanThread.stateMsg:
                     qianDanProcess(msg.obj.toString(),msg.arg1,msg.arg2);
                     break;
             }
@@ -61,7 +79,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     };
 
     public void qianDanProcess(String str,int arg1,int arg2){
-        refreshLogView(str +"\n");
+        refreshLogView(MyUtil.getTime()+"->"+str +"\n--------------------------------\n");
 
     }
 
@@ -73,6 +91,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         if(actionBar!=null){
             actionBar.hide();
         }
+
+        edit_account=(EditText)findViewById(R.id.account_md);
+        edit_password=(EditText)findViewById(R.id.password_md);
+        edit_dianzhi=(EditText)findViewById(R.id.dianzhi);
+        edit_yongjin=(EditText)findViewById(R.id.yongjin);
+        edit_bianhao=(EditText)findViewById(R.id.bianhao);
+        edit_min_ref=(EditText)findViewById(R.id.min_ref);
+        edit_max_ref=(EditText)findViewById(R.id.max_ref);
+
         button_start = (Button)findViewById(R.id.start);
         button_state=(ToggleButton)findViewById(R.id.toggleButton);
         button_start.setOnClickListener(this);
@@ -88,6 +115,64 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
 
     }
+
+    @Override
+    protected void onStart() {
+        loadSharedPreferences();
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        saveSharedPreferences();
+        super.onStop();
+    }
+
+    private void loadSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                PREFERENCE_NAME, MODE);
+        account = sharedPreferences.getString("account", "");
+        password = sharedPreferences.getString("password", "");
+        dianzhi = sharedPreferences.getString("dianzhi", "50");
+        yongjin = sharedPreferences.getString("yongjin", "1.5");
+        bianhao = sharedPreferences.getString("bianhao", "2056");
+        min_ref = sharedPreferences.getString("min_ref", "11");
+        max_ref = sharedPreferences.getString("max_ref", "15");
+        edit_account.setText(account);
+        edit_password.setText(password);
+        edit_bianhao.setText(bianhao);
+        edit_dianzhi.setText(dianzhi);
+        edit_yongjin.setText(yongjin);
+        edit_min_ref.setText(min_ref);
+        edit_max_ref.setText(max_ref);
+        //读取数据
+
+    }
+
+    private void saveSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                PREFERENCE_NAME, MODE);
+        account = edit_account.getText().toString();
+        password = edit_password.getText().toString();
+        dianzhi = edit_dianzhi.getText().toString();
+        yongjin = edit_yongjin.getText().toString();
+        bianhao = edit_bianhao.getText().toString();
+        min_ref = edit_min_ref.getText().toString();
+        max_ref = edit_max_ref.getText().toString();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("account", account);
+        editor.putString("password", password);
+        editor.putString("dianzhi", dianzhi);
+        editor.putString("yongjin", yongjin);
+        editor.putString("bianhao", bianhao);
+        editor.putString("min_ref", min_ref);
+        editor.putString("max_ref", max_ref);
+        editor.commit();
+    }
+
+
+
+
 
     void refreshLogView(String msg) {
 
@@ -116,6 +201,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
         switch (view.getId()){
             case R.id.start:
+
                 login();
                 break;
             case R.id.exit:
@@ -152,7 +238,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         button_start.setText("暂停");
         //refreshLogView(cookies);
         refreshLogView("\n"+account+"登录成功，休息一下，开始抢单");
-        Thread mainThead = new Thread(new QdMain(handler,15,12,30,0.9,cookiesMap));
+        Thread mainThead = new Thread(new QdMain(handler,account,15,12,30,0.9,cookiesMap));
         mainThead.start();
     }
     void toast(String msg){
@@ -165,7 +251,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         EditText editText1 = (EditText)findViewById(R.id.password_md) ;
         account = editText.getText().toString();
         password =  editText1.getText().toString();
-
+        saveSharedPreferences();
 
         if(account==null||account.equals("")||password==null||password.equals("")){
             toast("平台账号或密码不能为空");
