@@ -14,20 +14,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class QianDanThread implements Runnable{
 
     String id="";
+    ArrayList list = new ArrayList();
     private String TAG="QianDanThread";
     public static final  int stateMsg=311;
+    public static final int stateSuccessMsg=312;
     HashMap<String,String> headers = new HashMap<String, String>();
     private Handler handler;
 
-    QianDanThread(String idi,Handler handle){
+    QianDanThread(ArrayList list1,String idi,Handler handle){
         this.id = idi;
         this.handler = handle;
+        this.list = list1;
 
     }
 
@@ -137,10 +142,11 @@ public class QianDanThread implements Runnable{
                         QdMain.state = 1;
                     }
                     Message message = new Message();
-                    message.what = 311;
+                    message.what = stateSuccessMsg;
                     message.arg1 = QdMain.state;
                     message.arg2 = 1;
-                    message.obj = this.id+"抢单成功";
+                    list.add(this.id);
+                    message.obj = list;
                     handler.sendMessage(message);
                     //new Thread(new PlayMusic(this.script)).start();
                     //script.sleep(5000);
@@ -176,7 +182,7 @@ public class QianDanThread implements Runnable{
     }
     public void sendMessage(String str){
         Message message = new Message();
-        message.what = 311;
+        message.what = stateMsg;
         message.arg1 = QdMain.state;
         message.obj = this.id+"抢单失败原因："+str;
         handler.sendMessage(message);

@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -59,6 +60,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private HashMap<String,String> cookiesMap = new HashMap<>();
 
     private TextView logView;
+    private TextView logSuccessTextView;
 
     private Handler handler = new Handler(){
 
@@ -74,12 +76,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 case QianDanThread.stateMsg:
                     qianDanProcess(msg.obj.toString(),msg.arg1,msg.arg2);
                     break;
+                case QianDanThread.stateSuccessMsg:
+                    qianDanSuccessProcess(msg.obj,msg.arg1,msg.arg2);
+                    break;
             }
         }
     };
 
     public void qianDanProcess(String str,int arg1,int arg2){
         refreshLogView(MyUtil.getTime()+"->"+str +"\n--------------------------------\n");
+
+    }
+
+    public void qianDanSuccessProcess(Object object,int arg1,int arg2){
+        ArrayList list = (ArrayList)object;
+        refreshLogSuccessView(MyUtil.getTime()+"->["+list.get(2) +"]" +
+                "价格："+list.get(0)+"佣金"+list.get(1)+"\n--------------------------------\n");
 
     }
 
@@ -106,11 +118,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         button_exit =(Button)findViewById(R.id.exit);
         button_exit.setOnClickListener(this);
 
+        logSuccessTextView = (TextView)findViewById(R.id.logSuccessTextView);
+        logSuccessTextView.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         logView=(TextView)findViewById(R.id.logTextView);
         logView.setMovementMethod(ScrollingMovementMethod.getInstance());
-        for(int i=0;i<10;i++){
+        for(int i=0;i<20;i++){
             refreshLogView("欢迎使用秒单王系列产品\n本app是淘单抢单\n");
+        }
+        for(int i=0;i<20;i++){
+            refreshLogSuccessView("本文本显示抢单成功详细\n");
         }
 
 
@@ -171,7 +188,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     }
 
 
+    void refreshLogSuccessView(String msg) {
 
+        logSuccessTextView.append(msg);
+        logSuccessTextView.post(new Runnable() {
+            @Override
+            public void run() {
+                int offset = logSuccessTextView.getLineCount() * logSuccessTextView.getLineHeight();
+
+                if (offset > logSuccessTextView.getHeight()) {
+                    logSuccessTextView.scrollTo(0, offset - logSuccessTextView.getHeight());
+                }
+            }
+        });
+
+    }
 
 
     void refreshLogView(String msg) {

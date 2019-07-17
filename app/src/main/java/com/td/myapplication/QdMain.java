@@ -190,7 +190,10 @@ public class QdMain implements Runnable {
                         }
 
                         blacklistTemp.put(str2,strt1);
-                        new Thread(new QianDanThread(str2,handler)).start();
+                        ArrayList list = new ArrayList();
+                        list.add(strtemp);
+                        list.add(strt);
+                        new Thread(new QianDanThread(list,str2,handler)).start();
                         Message message1 = new Message();
                         message1.what=actionStartMsg;
                         message1.obj="开始抢["+str2+"]商品:价格"+strtemp+" 佣金:"+strt;
@@ -309,6 +312,56 @@ public class QdMain implements Runnable {
     }
 
     void 处理待付款(){
+        Map<String, String> headers = new HashMap<String, String>();
+
+        Connection.Response re=null;
+
+        headers.put("Host", "www.88887912.com");
+        headers.put("Connection", "keep-alive");
+        headers.put("Accept-Encoding", "gzip, deflate");
+        headers.put("Accept-Language", "zh,zh-HK;q=0.9,zh-CN;q=0.8,en;q=0.7,zh-TW;q=0.6");
+        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36");
+        headers.put("Upgrade-Insecure-Requests", "1");
+        headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+        headers.put("Referer", "http://www.88887912.com/user/MyRecTaskList.aspx");
+        while(true){
+            try {
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                re = Jsoup.connect("http://www.88887912.com/user/MyRecTaskList.aspx?state=6")
+                        .ignoreContentType(true)
+                        .ignoreHttpErrors(true)//忽略http错误
+                        .method(Connection.Method.GET)
+                        .headers(headers)
+                        .cookies(cookies)
+                        .timeout(20000)
+                        .execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // printPro re.body()//这里要做异常处理
+            String body = re.body();
+            Document d = Jsoup.parse(body);
+            Elements e = d.select("body > div.mid > div.hjfjd > ul.unjdnnd > li:nth-child(2) > a > div > span");
+            if(Integer.valueOf(e.get(0).text())<3){
+                Message message1 = new Message();
+                message1.what=actionStartMsg;
+                message1.obj="代付款任务小于3个，开始抢单";
+                handler.sendMessage(message1);
+                break;
+            }else{
+                Message message1 = new Message();
+                message1.what=actionStartMsg;
+                message1.obj="代付款任务大于等于3个，做单后自动开始抢单";
+                handler.sendMessage(message1);
+            }
+
+        }
+
 
 
     }
