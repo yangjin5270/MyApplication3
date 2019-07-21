@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -50,11 +51,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
     private String account;
     private String password;
+    private String wjAccount;
+    private String wjPassword;
+    private String wjGuid;
     private String dianzhi;
     private String yongjin;
     private String bianhao;
     private String min_ref;
     private String max_ref;
+    public static final int wjTheadFlag = 99;
 
     private final int loginRequstCode = 1;
     private HashMap<String,String> cookiesMap = new HashMap<>();
@@ -68,7 +73,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         public void handleMessage( Message msg){
             switch (msg.what){
                 case QdMain.refSuccessMsg:
-                    refreshLogView(MyUtil.getTime()+"->"+"刷新任务正常，共"+msg.arg1+"条任务\n--------------------------------\n");
+                    refreshLogView(MyUtil.getTime()+"->"+"刷新任务正常，共"+msg.arg1+"条任务，有符合条件单立即抢单\n--------------------------------\n");
                     break;
                 case QdMain.actionStartMsg:
                     refreshLogView(MyUtil.getTime()+"->"+msg.obj.toString()+"\n--------------------------------\n");
@@ -77,8 +82,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                     qianDanProcess(msg.obj.toString(),msg.arg1,msg.arg2);
                     break;
                 case QianDanThread.stateSuccessMsg:
+                    MediaPlayer mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.ding);
+                    mediaPlayer.start();
                     qianDanSuccessProcess(msg.obj,msg.arg1,msg.arg2);
                     break;
+                case MainActivity.wjTheadFlag:
+                    new Thread(new WjThead(wjAccount,wjPassword,wjGuid,this)).start();
+                    break;
+
             }
         }
     };
@@ -104,6 +115,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             actionBar.hide();
         }
 
+
         edit_account=(EditText)findViewById(R.id.account_md);
         edit_password=(EditText)findViewById(R.id.password_md);
         edit_dianzhi=(EditText)findViewById(R.id.dianzhi);
@@ -124,11 +136,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         logView=(TextView)findViewById(R.id.logTextView);
         logView.setMovementMethod(ScrollingMovementMethod.getInstance());
         for(int i=0;i<20;i++){
-            refreshLogView("欢迎使用秒单王系列产品\n本app是淘单抢单\n");
+            refreshLogView("欢迎使用秒单王系列产品\n本yapp是淘单抢单\n");
         }
         for(int i=0;i<20;i++){
             refreshLogSuccessView("本文本显示抢单成功详细\n");
         }
+
+        Intent inte = getIntent();
+        wjAccount = inte.getStringExtra("username");
+        wjPassword = inte.getStringExtra("password");
+        wjGuid = inte.getStringExtra("guid");
+        Message m = new Message();
+        m.what= wjTheadFlag;
+        handler.sendMessage(m);
+
+        /*Log.i(TAG,inte.getStringExtra("username")+inte.getStringExtra("password"));
+        new Thread(new WjThead(inte.getStringExtra("username"),
+                inte.getStringExtra("password"),inte.getStringExtra("guid"),handler)).start();*/
+
 
 
     }
@@ -169,13 +194,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private void saveSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences(
                 PREFERENCE_NAME, MODE);
-        account = edit_account.getText().toString();
-        password = edit_password.getText().toString();
-        dianzhi = edit_dianzhi.getText().toString();
-        yongjin = edit_yongjin.getText().toString();
-        bianhao = edit_bianhao.getText().toString();
-        min_ref = edit_min_ref.getText().toString();
-        max_ref = edit_max_ref.getText().toString();
+        account = edit_account.getText().toString().trim();
+        password = edit_password.getText().toString().trim();;
+        dianzhi = edit_dianzhi.getText().toString().trim();;
+        yongjin = edit_yongjin.getText().toString().trim();;
+        bianhao = edit_bianhao.getText().toString().trim();;
+        min_ref = edit_min_ref.getText().toString().trim();;
+        max_ref = edit_max_ref.getText().toString().trim();;
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("account", account);
         editor.putString("password", password);
@@ -232,8 +257,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
         switch (view.getId()){
             case R.id.start:
+                if(button_start.getText().toString().trim().equals("暂停")){
+                    QdMain.sleepFlag= true;
+                    refreshLogView("暂定中....");
+                    button_start.setText("启动");
+                }else{
+                    QdMain.sleepFlag= false;
+                    QdMain.runFlag = true;
+                    login();
+                }
 
-                login();
                 break;
             case R.id.exit:
                 exit();
@@ -269,8 +302,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         button_start.setText("暂停");
         //refreshLogView(cookies);
         refreshLogView("\n"+account+"登录成功，休息一下，开始抢单");
-        Thread mainThead = new Thread(new QdMain(handler,account,15,12,30,0.9,cookiesMap));
-        mainThead.start();
+        if(!QdMain.theadState){
+            QdMain.theadState = true;
+            Thread mainThead = new Thread(new QdMain(handler,account,15,12,30,0.9,cookiesMap));
+            mainThead.start();
+        }
+
     }
     void toast(String msg){
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
@@ -280,8 +317,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
         EditText editText = (EditText)findViewById(R.id.account_md) ;
         EditText editText1 = (EditText)findViewById(R.id.password_md) ;
-        account = editText.getText().toString();
-        password =  editText1.getText().toString();
+        account = editText.getText().toString().trim();;
+        password =  editText1.getText().toString().trim();;
         saveSharedPreferences();
 
         if(account==null||account.equals("")||password==null||password.equals("")){
@@ -334,6 +371,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     }
 
     private void exit(){
+        QdMain.runFlag = false;
         this.finish();
     }
 

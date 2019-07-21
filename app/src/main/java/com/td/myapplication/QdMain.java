@@ -36,11 +36,10 @@ public class QdMain implements Runnable {
 
     public static int state;
 
-    public void setSleepFlag(boolean sleepFlag) {
-        this.sleepFlag = sleepFlag;
-    }
+    public static boolean theadState = false;
 
-    private boolean sleepFlag;
+
+
     public static HashMap cookies = new HashMap();
 
 
@@ -49,11 +48,10 @@ public class QdMain implements Runnable {
     public static HashMap<String,String>blacklistTemp = new HashMap<String,String>();
 
 
-    public void setRunFlag(boolean runFlag) {
-        this.runFlag = runFlag;
-    }
 
-    private boolean runFlag = true;
+
+    public static boolean runFlag = true;
+    public static  boolean sleepFlag= true;
     public QdMain(Handler handler, String account,int maxSleep, int minSleep, int pic, double brokerage,HashMap cookies1) {
         this.account=account;
         this.handler = handler;
@@ -88,8 +86,19 @@ public class QdMain implements Runnable {
         headers.put("Upgrade-Insecure-Requests","1");
         String url = "http://www.88887912.com/user/newtasklist.aspx";
         sleepFlag = false;
+        boolean sendf = true;
+
         while(runFlag){
+            //Log.i(TAG,"main loop");
+            sendf = true;
             while(sleepFlag){
+                if(sendf){
+                    Message message2 = new Message();
+                    message2.what=actionStartMsg;
+                    message2.obj="抢单暂定，随时可启动";
+                    handler.sendMessage(message2);
+                    sendf = false;
+                }
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -136,12 +145,12 @@ public class QdMain implements Runnable {
                 document = Jsoup.parse(response.body(),"UTF-8");
                 //Log.i(TAG,response.body());
                 esGoodsPri = document.getElementsByAttributeValue("class","moamd2");//这里商品购买价格
+                Message message = new Message();
+                message.what = refSuccessMsg;
+                message.arg1 = esGoodsPri.size();
+                handler.sendMessage(message);
                 if(esGoodsPri.size()>0){
                     state = -1;
-                    Message message = new Message();
-                    message.what = refSuccessMsg;
-                    message.arg1 = esGoodsPri.size();
-                    handler.sendMessage(message);
                     Elements esBrokerage = document.getElementsByAttributeValue("class","moamd3");//商品佣金
                     Elements postDatas = document.getElementsByAttributeValue("class","ljqdn");//mhmkdd
                     Elements taskId = document.getElementsByAttributeValue("class","mhmkdd");//
@@ -203,9 +212,9 @@ public class QdMain implements Runnable {
                     }
 
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.i(TAG,"平台网络访问超时");
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             try {
                 int tim = MyUtil.randomRange(minSleep*1000,maxSleep*1000);

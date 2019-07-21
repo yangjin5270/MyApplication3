@@ -1,4 +1,5 @@
 package com.td.myapplication;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -148,6 +149,7 @@ public class QianDanThread implements Runnable{
                     list.add(this.id);
                     message.obj = list;
                     handler.sendMessage(message);
+
                     //new Thread(new PlayMusic(this.script)).start();
                     //script.sleep(5000);
                     //GV.playFlag = true
@@ -175,7 +177,7 @@ public class QianDanThread implements Runnable{
                 }
             } catch (Exception e) {
                 QdMain.state = 8484;
-                Log.i(TAG,"线程"+e);
+                //Log.i(TAG,"线程"+e);
             }
 
             //GV.threadNumCount++;

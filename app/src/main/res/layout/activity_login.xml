@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:id="@+id/container"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gb"
+   >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:gravity="center|center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="淘单抢单2.2.1"
+            android:textColor="#DD0202"
+            android:textSize="30dp" />
+
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+
+            android:hint="请输入账号"
+            android:inputType="textEmailAddress"
+            android:selectAllOnFocus="true" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+
+
+            android:hint="请输入密码"
+
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:selectAllOnFocus="true" />
+
+        <Button
+            android:id="@+id/login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+
+            android:enabled="true"
+            android:text="登入" />
+
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
