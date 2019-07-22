@@ -26,6 +26,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(this.getClass().getSimpleName(),"onCreate");
+        ActivityCollector.addActivity(this);
         super.onCreate(savedInstanceState);
     }
 
@@ -46,6 +47,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.i(this.getClass().getSimpleName(),"onDestroy");
+        ActivityCollector.removeActivity(this);
         super.onDestroy();
 
     }

@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private String min_ref;
     private String max_ref;
     public static final int wjTheadFlag = 99;
-
+    private long backtime = 0;
     private final int loginRequstCode = 1;
     private HashMap<String,String> cookiesMap = new HashMap<>();
 
@@ -274,7 +274,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if((System.currentTimeMillis()-backtime)<2000){
+           exit();
+        }else{
+            backtime = System.currentTimeMillis();
+            Toast.makeText(this,"再按一次退出程序！",Toast.LENGTH_SHORT).show();
+        }
+    }
 
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         switch (requestCode){
@@ -372,7 +382,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
     private void exit(){
         QdMain.runFlag = false;
-        this.finish();
+        ActivityCollector.finishAll();
     }
 
 }

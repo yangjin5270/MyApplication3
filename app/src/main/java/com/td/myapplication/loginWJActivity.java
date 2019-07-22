@@ -1,6 +1,7 @@
 package com.td.myapplication;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,13 +28,17 @@ import java.util.HashMap;
 
 public class loginWJActivity extends BaseActivity implements  View.OnClickListener{
 
-
+    public static final String PREFERENCE_NAME = "SaveSetting1";
+    //定义SharedPreferences的访问模式：全局读+全局写
+    public static int MODE = MODE_PRIVATE;
     private EditText usernameEditText ;
     private EditText passwordEditText ;
     private Button loginButton ;
     private ProgressBar loadingProgressBar;
     private String TAG="loginWJActivity";
     public String IMEI;
+    private String account;
+    private String password;
     public boolean start=true;
     private Handler handler = new Handler() {
         @Override
@@ -142,14 +147,45 @@ public class loginWJActivity extends BaseActivity implements  View.OnClickListen
 
 
 
-
+    @Override
+    protected void onStart() {
+        loadSharedPreferences();
+        super.onStart();
+    }
 
     @Override
     protected void onStop() {
-
+        saveSharedPreferences();
         super.onStop();
+    }
+
+    private void loadSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                PREFERENCE_NAME, MODE);
+        account = sharedPreferences.getString("account", "");
+        password = sharedPreferences.getString("password", "");
+
+        usernameEditText.setText(account);
+        passwordEditText.setText(password);
+
+        //读取数据
 
     }
+
+    private void saveSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                PREFERENCE_NAME, MODE);
+        account = usernameEditText.getText().toString().trim();
+        password = passwordEditText.getText().toString().trim();;
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("account", account);
+        editor.putString("password", password);
+
+        editor.commit();
+    }
+
+
     @Override
     protected void onDestroy() {
 
