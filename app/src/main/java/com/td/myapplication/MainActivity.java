@@ -1,10 +1,10 @@
 package com.td.myapplication;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
+import androidx.appcompat.app.ActionBar;
+
+
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
@@ -21,10 +21,9 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.io.File;
-import java.io.FileOutputStream;
+
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,7 +62,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private long backtime = 0;
     private final int loginRequstCode = 1;
     private HashMap<String,String> cookiesMap = new HashMap<>();
-
+    private QdMain qdmian;
     private TextView logView;
     private TextView logSuccessTextView;
 
@@ -263,13 +262,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                     button_start.setText("启动");
                 }else{
                     account = edit_account.getText().toString().trim();
-                    password = edit_password.getText().toString().trim();;
-                    dianzhi = edit_dianzhi.getText().toString().trim();;
-                    yongjin = edit_yongjin.getText().toString().trim();;
-                    bianhao = edit_bianhao.getText().toString().trim();;
-                    min_ref = edit_min_ref.getText().toString().trim();;
-                    max_ref = edit_max_ref.getText().toString().trim();;
+                    password = edit_password.getText().toString().trim();
+                    dianzhi = edit_dianzhi.getText().toString().trim();
+                    yongjin = edit_yongjin.getText().toString().trim();
+                    bianhao = edit_bianhao.getText().toString().trim();
+                    min_ref = edit_min_ref.getText().toString().trim();
+                    max_ref = edit_max_ref.getText().toString().trim();
                     refreshLogView("刷新间隔："+max_ref+"-"+min_ref+"秒,垫支："+dianzhi+"佣金："+yongjin+"发送编号:"+bianhao+"\n-----------------------\n");
+                    if(qdmian!=null){
+                        qdmian.setBrokerage(Double.valueOf(yongjin));
+                        qdmian.setMaxSleep(Integer.valueOf(max_ref));
+                        qdmian.setMinSleep(Integer.valueOf(min_ref));
+                        qdmian.setPic(Integer.valueOf(dianzhi));
+                        qdmian.setUid(bianhao);
+                    }
                     QdMain.sleepFlag= false;
                     QdMain.runFlag = true;
                     login();
@@ -322,7 +328,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         refreshLogView("\n"+account+"登录成功，休息一下，开始抢单");
         if(!QdMain.theadState){
             QdMain.theadState = true;
-            Thread mainThead = new Thread(new QdMain(handler,account,Integer.valueOf(max_ref),Integer.valueOf(min_ref),Integer.valueOf(dianzhi),Double.valueOf(yongjin),bianhao,cookiesMap));
+            qdmian = new QdMain(handler,account,Integer.valueOf(max_ref),Integer.valueOf(min_ref),Integer.valueOf(dianzhi),Double.valueOf(yongjin),bianhao,cookiesMap);
+            Thread mainThead = new Thread(qdmian);
             mainThead.start();
         }
 

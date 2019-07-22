@@ -33,6 +33,27 @@ public class QdMain implements Runnable {
     private int maxSleep;
     private int minSleep;
     private int pic;
+
+    public void setMaxSleep(int maxSleep) {
+        this.maxSleep = maxSleep;
+    }
+
+    public void setMinSleep(int minSleep) {
+        this.minSleep = minSleep;
+    }
+
+    public void setPic(int pic) {
+        this.pic = pic;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public void setBrokerage(double brokerage) {
+        this.brokerage = brokerage;
+    }
+
     private String uid;
     public static int state;
 
