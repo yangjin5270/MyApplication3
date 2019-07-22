@@ -259,9 +259,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             case R.id.start:
                 if(button_start.getText().toString().trim().equals("暂停")){
                     QdMain.sleepFlag= true;
-                    refreshLogView("暂定中....");
+                    refreshLogView("暂定中......\n");
                     button_start.setText("启动");
                 }else{
+                    account = edit_account.getText().toString().trim();
+                    password = edit_password.getText().toString().trim();;
+                    dianzhi = edit_dianzhi.getText().toString().trim();;
+                    yongjin = edit_yongjin.getText().toString().trim();;
+                    bianhao = edit_bianhao.getText().toString().trim();;
+                    min_ref = edit_min_ref.getText().toString().trim();;
+                    max_ref = edit_max_ref.getText().toString().trim();;
+                    refreshLogView("刷新间隔："+max_ref+"-"+min_ref+"秒,垫支："+dianzhi+"佣金："+yongjin+"发送编号:"+bianhao+"\n-----------------------\n");
                     QdMain.sleepFlag= false;
                     QdMain.runFlag = true;
                     login();
@@ -314,7 +322,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         refreshLogView("\n"+account+"登录成功，休息一下，开始抢单");
         if(!QdMain.theadState){
             QdMain.theadState = true;
-            Thread mainThead = new Thread(new QdMain(handler,account,15,12,30,0.9,cookiesMap));
+            Thread mainThead = new Thread(new QdMain(handler,account,Integer.valueOf(max_ref),Integer.valueOf(min_ref),Integer.valueOf(dianzhi),Double.valueOf(yongjin),bianhao,cookiesMap));
             mainThead.start();
         }
 

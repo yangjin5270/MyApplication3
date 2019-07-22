@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">秒单王</string>
     <string name="app_title">秒单王</string>
-    <string name="title_activity_login">loginActivity</string>
+    <string name="title_activity_login">秒单王</string>
 </resources>

@@ -33,7 +33,7 @@ public class QdMain implements Runnable {
     private int maxSleep;
     private int minSleep;
     private int pic;
-
+    private String uid;
     public static int state;
 
     public static boolean theadState = false;
@@ -52,13 +52,14 @@ public class QdMain implements Runnable {
 
     public static boolean runFlag = true;
     public static  boolean sleepFlag= true;
-    public QdMain(Handler handler, String account,int maxSleep, int minSleep, int pic, double brokerage,HashMap cookies1) {
+    public QdMain(Handler handler, String account,int maxSleep, int minSleep, int pic, double brokerage,String uid,HashMap cookies1) {
         this.account=account;
         this.handler = handler;
         this.maxSleep = maxSleep;
         this.minSleep = minSleep;
         this.pic = pic;
         this.brokerage = brokerage;
+        this.uid= uid;
         cookies = cookies1;
         init();
         Message message = new Message();
@@ -69,6 +70,24 @@ public class QdMain implements Runnable {
     }
 
     private double brokerage;
+
+    void pause(){
+        boolean sendf = true;
+        while(sleepFlag){
+            if(sendf){
+                Message message2 = new Message();
+                message2.what=actionStartMsg;
+                message2.obj="抢单暂定，随时可启动";
+                handler.sendMessage(message2);
+                sendf = false;
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     @Override
     public void run() {
         Log.i(TAG,"mianThead start>>>>>>>>");
@@ -86,25 +105,11 @@ public class QdMain implements Runnable {
         headers.put("Upgrade-Insecure-Requests","1");
         String url = "http://www.88887912.com/user/newtasklist.aspx";
         sleepFlag = false;
-        boolean sendf = true;
 
         while(runFlag){
             //Log.i(TAG,"main loop");
-            sendf = true;
-            while(sleepFlag){
-                if(sendf){
-                    Message message2 = new Message();
-                    message2.what=actionStartMsg;
-                    message2.obj="抢单暂定，随时可启动";
-                    handler.sendMessage(message2);
-                    sendf = false;
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+
+            pause();
             switch (state){
                 case 998:
                     处理最多接任();
@@ -216,6 +221,7 @@ public class QdMain implements Runnable {
                 Log.i(TAG,"平台网络访问超时");
                 //e.printStackTrace();
             }
+            pause();
             try {
                 int tim = MyUtil.randomRange(minSleep*1000,maxSleep*1000);
                 Message message1 = new Message();
