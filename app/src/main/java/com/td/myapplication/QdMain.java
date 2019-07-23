@@ -265,7 +265,7 @@ public class QdMain implements Runnable {
         message1.what=actionStartMsg;
         message1.obj="账号：您已超过今天最多接任务数量，请明天再接！";
         handler.sendMessage(message1);
-        Ifeige.sendMessageUser("2056","抢单：账号：您已超过今天最多接任务数量，请明天再接！",account);
+        Ifeige.sendMessageUser(uid,"抢单：账号：您已超过今天最多接任务数量，请明天再接！",account);
         //Message.sendMessageWX("",GV.sendMessageWXName)
         while(true){
             //toast("今日已做完所有订单")
@@ -283,7 +283,7 @@ public class QdMain implements Runnable {
         message1.what=actionStartMsg;
         message1.obj="今日已做完所有订单！";
         handler.sendMessage(message1);
-        Ifeige.sendMessageUser("2056","抢单：今日已做完所有订单！",account);
+        Ifeige.sendMessageUser(uid,"抢单：今日已做完所有订单！",account);
 
         while(true){
             //toast("今日已做完所有订单")
@@ -300,7 +300,7 @@ public class QdMain implements Runnable {
         message1.what=actionStartMsg;
         message1.obj="你有超过7天未收货，请收货后，在抢单！";
         handler.sendMessage(message1);
-        Ifeige.sendMessageUser("2056","抢单：你有超过7天未收货，请收货后，在抢单！",account);
+        Ifeige.sendMessageUser(uid,"抢单：你有超过7天未收货，请收货后，在抢单！",account);
 
         while(true){
             //toast("今日已做完所有订单")
@@ -318,7 +318,7 @@ public class QdMain implements Runnable {
         message1.what=actionStartMsg;
         message1.obj="你被限制接单！";
         handler.sendMessage(message1);
-        Ifeige.sendMessageUser("2056","抢单：你被限制接单！",account);
+        Ifeige.sendMessageUser(uid,"抢单：你被限制接单！",account);
 
         while(true){
             //toast("今日已做完所有订单")
