@@ -268,7 +268,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                     bianhao = edit_bianhao.getText().toString().trim();
                     min_ref = edit_min_ref.getText().toString().trim();
                     max_ref = edit_max_ref.getText().toString().trim();
-                    refreshLogView("刷新间隔："+max_ref+"-"+min_ref+"秒,垫支："+dianzhi+"佣金："+yongjin+"发送编号:"+bianhao+"\n-----------------------\n");
+                    refreshLogView("刷新间隔："+min_ref+"-"+max_ref+"秒,垫支："+dianzhi+"佣金："+yongjin+"发送编号:"+bianhao+"\n-----------------------\n");
                     if(qdmian!=null){
                         qdmian.setBrokerage(Double.valueOf(yongjin));
                         qdmian.setMaxSleep(Integer.valueOf(max_ref));
@@ -306,7 +306,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 if(resultCode==RESULT_CANCELED){
                     return;
                 }
-                Toast.makeText(this, data.getStringExtra("cookies"), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, data.getStringExtra("cookies"), Toast.LENGTH_SHORT).show();
                 Log.i(TAG,data.getStringExtra("cookies"));
                 initState(data.getStringExtra("cookies"));
                 break;
