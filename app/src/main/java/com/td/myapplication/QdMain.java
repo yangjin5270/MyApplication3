@@ -376,25 +376,26 @@ public class QdMain implements Runnable {
                         .cookies(cookies)
                         .timeout(20000)
                         .execute();
-            } catch (IOException e) {
+
+                String body = re.body();
+                Document d = Jsoup.parse(body);
+                Elements e = d.select("body > div.mid > div.hjfjd > ul.unjdnnd > li:nth-child(2) > a > div > span");
+                if(Integer.valueOf(e.get(0).text())<3){
+                    Message message1 = new Message();
+                    message1.what=actionStartMsg;
+                    message1.obj="代付款任务小于3个，开始抢单";
+                    handler.sendMessage(message1);
+                    break;
+                }else{
+                    Message message1 = new Message();
+                    message1.what=actionStartMsg;
+                    message1.obj="代付款任务大于等于3个，做单后自动开始抢单";
+                    handler.sendMessage(message1);
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             // printPro re.body()//这里要做异常处理
-            String body = re.body();
-            Document d = Jsoup.parse(body);
-            Elements e = d.select("body > div.mid > div.hjfjd > ul.unjdnnd > li:nth-child(2) > a > div > span");
-            if(Integer.valueOf(e.get(0).text())<3){
-                Message message1 = new Message();
-                message1.what=actionStartMsg;
-                message1.obj="代付款任务小于3个，开始抢单";
-                handler.sendMessage(message1);
-                break;
-            }else{
-                Message message1 = new Message();
-                message1.what=actionStartMsg;
-                message1.obj="代付款任务大于等于3个，做单后自动开始抢单";
-                handler.sendMessage(message1);
-            }
 
         }
 
