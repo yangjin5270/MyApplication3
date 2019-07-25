@@ -24,6 +24,7 @@ import java.io.File;
 
 import java.io.FileReader;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,7 +40,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private Button button_start;
     private Button button_exit;
     private ToggleButton button_state;
-
+    private long tim;
     private EditText edit_account;
     private EditText edit_password;
     private EditText edit_dianzhi;
@@ -87,6 +88,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                     break;
                 case MainActivity.wjTheadFlag:
                     new Thread(new WjThead(wjAccount,wjPassword,wjGuid,this)).start();
+                    break;
+                case QdMain.reLoginMsg:
+                    Toast.makeText(MainActivity.this,"重新登录平台",Toast.LENGTH_SHORT).show();
+                    login();
                     break;
 
             }
@@ -258,7 +263,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             case R.id.start:
                 if(button_start.getText().toString().trim().equals("暂停")){
                     QdMain.sleepFlag= true;
-                    refreshLogView("暂定中......\n");
+                    refreshLogView("\n暂定中......请勿其他操作。\n");
                     button_start.setText("启动");
                 }else{
                     account = edit_account.getText().toString().trim();
@@ -309,6 +314,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 //Toast.makeText(this, data.getStringExtra("cookies"), Toast.LENGTH_SHORT).show();
                 Log.i(TAG,data.getStringExtra("cookies"));
                 initState(data.getStringExtra("cookies"));
+                SimpleDateFormat sfd1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                try {
+                    tim = sfd1.parse(data.getStringExtra("cookietime")).getTime();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
                 default:
                     break;
@@ -328,7 +339,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         refreshLogView("\n"+account+"登录成功，休息一下，开始抢单");
         if(!QdMain.theadState){
             QdMain.theadState = true;
-            qdmian = new QdMain(handler,account,Integer.valueOf(max_ref),Integer.valueOf(min_ref),Integer.valueOf(dianzhi),Double.valueOf(yongjin),bianhao,cookiesMap);
+            qdmian = new QdMain(handler,account,Integer.valueOf(max_ref),Integer.valueOf(min_ref),Integer.valueOf(dianzhi),Double.valueOf(yongjin),bianhao,cookiesMap,tim);
             Thread mainThead = new Thread(qdmian);
             mainThead.start();
         }
@@ -374,8 +385,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 print(stringBuffer.toString());
                 String[] strs = stringBuffer.toString().split("qazwsxedc");
                 SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                long tim = sf.parse(strs[0]).getTime();
-                if(tim-System.currentTimeMillis()>60*60*1000){
+                tim = sf.parse(strs[0]).getTime();
+                if(tim-System.currentTimeMillis()>21*60*1000){
                     initState(strs[1]);
                     Toast.makeText(this,"读取到登录信息！",Toast.LENGTH_SHORT).show();;
                     return;

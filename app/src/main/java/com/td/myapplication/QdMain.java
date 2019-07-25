@@ -27,13 +27,14 @@ public class QdMain implements Runnable {
 
     public static final int refSuccessMsg =51;
     public static final int actionStartMsg =52;
+    public static final int reLoginMsg=553;
     public static String account;
     private String TAG="QdMain";
     private Handler handler;
     private int maxSleep;
     private int minSleep;
     private int pic;
-
+    private long tim;
     public void setMaxSleep(int maxSleep) {
         this.maxSleep = maxSleep;
     }
@@ -73,7 +74,7 @@ public class QdMain implements Runnable {
 
     public static boolean runFlag = true;
     public static  boolean sleepFlag= true;
-    public QdMain(Handler handler, String account,int maxSleep, int minSleep, int pic, double brokerage,String uid,HashMap cookies1) {
+    public QdMain(Handler handler, String account,int maxSleep, int minSleep, int pic, double brokerage,String uid,HashMap cookies1,long tim1) {
         this.account=account;
         this.handler = handler;
         this.maxSleep = maxSleep;
@@ -82,6 +83,7 @@ public class QdMain implements Runnable {
         this.brokerage = brokerage;
         this.uid= uid;
         cookies = cookies1;
+        this.tim = tim1;
         init();
         Message message = new Message();
         message.what=actionStartMsg;
@@ -98,7 +100,7 @@ public class QdMain implements Runnable {
             if(sendf){
                 Message message2 = new Message();
                 message2.what=actionStartMsg;
-                message2.obj="抢单暂定，随时可启动";
+                message2.obj="抢单暂定，随时可启动\n";
                 handler.sendMessage(message2);
                 sendf = false;
             }
@@ -242,8 +244,13 @@ public class QdMain implements Runnable {
                 Log.i(TAG,"平台网络访问超时");
                 //e.printStackTrace();
             }
-            pause();
             try {
+                if(tim-System.currentTimeMillis()<20*60*1000){
+                    Message message3 = new Message();
+                    message3.what=reLoginMsg;
+                    handler.sendMessage(message3);
+                    sleepFlag = true;
+                }
                 int tim = MyUtil.randomRange(minSleep*1000,maxSleep*1000);
                 Message message1 = new Message();
                 message1.what=actionStartMsg;
@@ -255,6 +262,7 @@ public class QdMain implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            pause();
 
         }
 

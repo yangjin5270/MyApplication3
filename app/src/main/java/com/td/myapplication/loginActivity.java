@@ -31,6 +31,7 @@ public class loginActivity extends BaseActivity {
     private String password;
     private int action=1;
     private String returnStr="";
+    private String cookietime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +107,7 @@ public class loginActivity extends BaseActivity {
                     FileOutputStream out = new FileOutputStream(file);
                     PrintStream p = new PrintStream(out);
                     sfd1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    String cookietime = sfd1.format(new Date(System.currentTimeMillis()+(8 * 60 * 60 * 1000)));
+                    cookietime = sfd1.format(new Date(System.currentTimeMillis()+(8 * 60 * 60 * 1000)));
 
                     p.print(cookietime+"qazwsxedc"+CookieStr);
                     p.flush();
@@ -133,6 +134,7 @@ public class loginActivity extends BaseActivity {
     public void onBackPressed() {
         Intent intent1 = new Intent();
         intent1.putExtra("cookies",returnStr);
+        intent1.putExtra("cookietime",cookietime);
         setResult(RESULT_CANCELED,intent1);
         super.onBackPressed();
     }
