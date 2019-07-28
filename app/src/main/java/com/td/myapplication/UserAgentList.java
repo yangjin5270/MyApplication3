@@ -6,11 +6,7 @@ import java.util.Random;
 public class UserAgentList {
 
 
-    public static String getUA(){
 
-        int num = new Random().nextInt(agentList.length-0+1)+0;
-        return agentList[num];
-    }
 
     public static final String[] agentList={
                 "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
