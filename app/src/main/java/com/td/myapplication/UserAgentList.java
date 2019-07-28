@@ -5,7 +5,10 @@ import java.util.Random;
 
 public class UserAgentList {
 
-
+    public static String getUA(){
+        int i = new Random().nextInt(agentList.length-1);
+        return  agentList[i];
+    }
 
 
     public static final String[] agentList={
