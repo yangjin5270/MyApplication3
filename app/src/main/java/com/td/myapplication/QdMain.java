@@ -28,6 +28,7 @@ public class QdMain implements Runnable {
     public static final int refSuccessMsg =51;
     public static final int actionStartMsg =52;
     public static final int reLoginMsg=553;
+    public static final int jsMsg=555;
     public static String account;
     private String TAG="QdMain";
     private Handler handler;
@@ -162,6 +163,12 @@ public class QdMain implements Runnable {
                         .cookies(cookies)
                         .timeout(30000).execute();
                 String str = response.cookie("reftime");
+                Log.i(TAG,response.body());
+                if(response.body().toString().contains("<script>")){
+                    Message message = new Message();
+                    message.what = jsMsg;
+                    handler.sendMessage(message);
+                }
                 if(str!=null){
                     cookies.put("reftime",str);
                 }
@@ -171,7 +178,7 @@ public class QdMain implements Runnable {
                 }
 
                 document = Jsoup.parse(response.body(),"UTF-8");
-                //Log.i(TAG,response.body());
+
                 esGoodsPri = document.getElementsByAttributeValue("class","moamd2");//这里商品购买价格
                 Message message = new Message();
                 message.what = refSuccessMsg;
@@ -242,7 +249,7 @@ public class QdMain implements Runnable {
                 }
             } catch (Exception e) {
                 Log.i(TAG,"平台网络访问超时");
-                //e.printStackTrace();
+                e.printStackTrace();
             }
             try {
                 if(tim-System.currentTimeMillis()<20*60*1000){

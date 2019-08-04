@@ -114,8 +114,8 @@ public class loginActivity extends BaseActivity {
                     p.close();
                     out.flush();
                     out.close();
-                    cookieManager.removeSessionCookie();
-                    cookieManager.removeAllCookie();
+                    //cookieManager.removeSessionCookie();
+                    //cookieManager.removeAllCookie();
                     Log.i(TAG,"生成cookies文件" + file.getName()+"完毕");
 
 
