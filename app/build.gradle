@@ -30,4 +30,5 @@ dependencies {
     implementation files('libs/fastjson-1.1.71.android.jar')
     implementation files('libs/mysql-connector-java-5.1.47.jar')
     implementation files('libs/jsoup-1.12.1.jar')
+    implementation files('libs/commons-codec-1.13.jar')
 }

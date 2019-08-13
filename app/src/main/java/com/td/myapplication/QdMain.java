@@ -163,12 +163,12 @@ public class QdMain implements Runnable {
                         .cookies(cookies)
                         .timeout(30000).execute();
                 String str = response.cookie("reftime");
-                Log.i(TAG,response.body());
-                if(response.body().toString().contains("<script>")){
+                //Log.i(TAG,response.body());
+                /*if(response.body().toString().contains("<script>")){
                     Message message = new Message();
                     message.what = jsMsg;
                     handler.sendMessage(message);
-                }
+                }*/
                 if(str!=null){
                     cookies.put("reftime",str);
                 }
@@ -395,16 +395,16 @@ public class QdMain implements Runnable {
                 String body = re.body();
                 Document d = Jsoup.parse(body);
                 Elements e = d.select("body > div.mid > div.hjfjd > ul.unjdnnd > li:nth-child(2) > a > div > span");
-                if(Integer.valueOf(e.get(0).text())<3){
+                if(Integer.valueOf(e.get(0).text())<1){
                     Message message1 = new Message();
                     message1.what=actionStartMsg;
-                    message1.obj="代付款任务小于3个，开始抢单";
+                    message1.obj="代付款任务小于1个，开始抢单";
                     handler.sendMessage(message1);
                     break;
                 }else{
                     Message message1 = new Message();
                     message1.what=actionStartMsg;
-                    message1.obj="代付款任务大于等于3个，做单后自动开始抢单";
+                    message1.obj="代付款任务大于等于1个，做单后自动开始抢单";
                     handler.sendMessage(message1);
                 }
             } catch (Exception e) {

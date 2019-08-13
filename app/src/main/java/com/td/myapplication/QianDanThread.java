@@ -155,8 +155,8 @@ public class QianDanThread implements Runnable{
                     //script.sleep(5000);
                     //GV.playFlag = true
 
-                }else if(str.contains("待付款任务已超过3个")){
-                    Log.i(TAG,this.id+"抢单失败原因：待付款任务已超过3个");
+                }else if(str.contains("待付款任务已超过")){
+                    Log.i(TAG,this.id+"抢单失败原因：待付款任务已超过");
                     //script.print QdMain.state
                     if(QdMain.state<59){
                         QdMain.state = 59;
